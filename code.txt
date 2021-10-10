@@ -1,0 +1,618 @@
+Private Sub Form_Load()
+Timer1.Enabled = True
+Me.Left = (Screen.Width - Me.Width) / 2
+Me.Top = (Screen.Height - Me.Height) / 2
+End Sub
+
+Private Sub Timer1_Timer()
+ProgressBar1.Value = ProgressBar1.Value + 4
+If (ProgressBar1.Value = ProgressBar1.Max) Then
+Timer1.Enabled = False
+Form9.Show
+Unload Me
+End If
+End Sub
+
+Private Sub Command3_Click()
+Dim a As String
+Dim b As String
+Dim c As String
+Dim d As Date
+Adodc3.RecordSource = "select * from Taken where ISBN = '" + Text3.Text + "' and Regno = '" + Text1.Text + "'"
+Adodc3.Refresh
+If Adodc3.Recordset.RecordCount = 0 Then
+MsgBox "Invalid ISBN"
+Text3.Text = ""
+ElseIf Adodc3.Recordset.RecordCount = 1 Then
+Dim ret As String
+ret = MsgBox("Do you really want to Return this Book?", vbYesNoCancel)
+If ret = vbYes Then
+a = Adodc3.Recordset("Regno")
+b = Adodc3.Recordset("ISBN")
+c = Adodc3.Recordset("Title")
+d = Adodc3.Recordset("Recieveddt")
+Adodc4.Recordset.AddNew
+Adodc4.Recordset.Fields("Regno").Value = a
+Adodc4.Recordset.Fields("ISBN").Value = b
+Adodc4.Recordset.Fields("Title").Value = c
+Adodc4.Recordset.Fields("Recieveddt").Value = d
+Adodc4.Recordset.Fields("Returndt").Value = Format(Now, "dd/mm/yyyy")
+Adodc4.Recordset.Update
+Adodc3.RecordSource = "select * from Taken where ISBN = '" + Text3.Text + "' and Regno = '" + Text1.Text + "'"
+Adodc3.Refresh
+Adodc3.Recordset.Delete
+MsgBox "Successfully Returned"
+Adodc3.RecordSource = "select * from Taken where Regno = '" + Text1.Text + "'"
+Adodc3.Refresh
+Adodc4.RecordSource = "select * from Return where Regno = '" + Text1.Text + "'"
+Adodc4.Refresh
+Text3.Text = ""
+End If
+End If
+End Sub
+
+Private Sub findbtn_Click()
+Adodc3.RecordSource = "select * from Taken where Regno = '" + Text1.Text + "'"
+Adodc3.Refresh
+Adodc4.RecordSource = "select * from Return where Regno = '" + Text1.Text + "'"
+Adodc4.Refresh
+Dim pic As String
+Adodc1.RecordSource = "select * from Student where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox "Invalid Register Number / Data Not Found"
+ElseIf Adodc1.Recordset.RecordCount = 1 Then
+Label4 = Adodc1.Recordset("Regno")
+Label5 = Adodc1.Recordset("Studname")
+Label10 = Adodc1.Recordset("Course")
+Label7 = Adodc1.Recordset("DOB")
+pic = Adodc1.Recordset("Photo")
+Image1.Picture = LoadPicture(pic)
+DataGrid1.Visible = True
+Frame2.Visible = True
+Frame4.Visible = True
+Image1.Visible = True
+DataGrid1.Visible = True
+DataGrid2.Visible = True
+End If
+End Sub
+
+Private Sub Form_Load()
+Frame2.Visible = False
+Frame4.Visible = False
+Image1.Visible = False
+DataGrid1.Visible = False
+DataGrid2.Visible = False
+End Sub
+
+Private Sub mnuhmm_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Private Sub mnuref_Click()
+Adodc3.RecordSource = "select * from Taken where Regno = '" + Text1.Text + "'"
+Adodc3.Refresh
+Adodc4.RecordSource = "select * from Return where Regno = '" + Text1.Text + "'"
+Adodc4.Refresh
+End Sub
+
+Private Sub Form_Load()
+Me.Left = (Screen.Width - Me.Width) / 2
+Me.Top = (Screen.Height - Me.Height) / 2
+End Sub
+
+Private Sub logincmd_Click()
+If txtUser = "" Or Text1 = "" Or Text2 = "" Then
+MsgBox "Please Enter Details"
+txtUser.SetFocus
+Exit Sub
+End If
+If Text1.Text = Text2.Text Then
+Adodc1.RecordSource = "select * from Login"
+Adodc1.Refresh
+Adodc1.Recordset.AddNew
+Adodc1.Recordset.Fields("Username").Value = txtUser.Text
+Adodc1.Recordset.Fields("Password").Value = Text1.Text
+Adodc1.Recordset.Update
+MsgBox "User Added"
+txtUser.Text = ""
+Text1.Text = ""
+Text2.Text = ""
+Else
+MsgBox "Password Not Matched"
+Exit Sub
+End If
+End Sub
+
+Private Sub mnuhm_Click()
+Unload Me
+End Sub
+
+Private Sub Command1_Click()
+Adodc2.RecordSource = "select * from Books where ISBN = '" + Text2.Text + "'"
+Adodc2.Refresh
+If Adodc2.Recordset.RecordCount = 0 Then
+MsgBox "Invalid ISBN Number / Data Not Found"
+ElseIf Adodc2.Recordset.RecordCount = 1 Then
+DataGrid1.Visible = True
+Adodc3.RecordSource = "select * from Taken where Regno = '" + Text1.Text + "'"
+Adodc3.Refresh
+Frame2.Visible = True
+Frame3.Visible = True
+Command2.Visible = True
+Label17 = Adodc2.Recordset("Title")
+Label18 = Adodc2.Recordset("Author")
+Label19 = Adodc2.Recordset("Publisher")
+Label20 = Adodc2.Recordset("Edition")
+Label22 = Adodc2.Recordset("Languege")
+Label23 = Adodc2.Recordset("Category")
+End If
+End Sub
+
+Private Sub Command2_Click()
+Dim issue As String
+issue = MsgBox("Do you really want to Issue this Book?", vbYesNoCancel)
+If issue = vbYes Then
+Adodc3.Recordset.AddNew
+Adodc3.Recordset.Fields("Regno").Value = Text1.Text
+Adodc3.Recordset.Fields("ISBN").Value = Text2.Text
+Adodc3.Recordset.Fields("Title").Value = Label17.Caption
+Adodc3.Recordset.Fields("Recieveddt").Value = Format(Now, "dd/mm/yyyy")
+Adodc3.Recordset.Update
+MsgBox "Book Issued"
+Adodc3.RecordSource = "select * from Taken where Regno = '" + Text1.Text + "'"
+Adodc3.Refresh
+Text2.Text = ""
+Command2.Visible = False
+Label17.Caption = ""
+Label18.Caption = ""
+Label19.Caption = ""
+Label20.Caption = ""
+Label22.Caption = ""
+Label23.Caption = ""
+End If
+End Sub
+
+Private Sub findbtn_Click()
+Dim pic As String
+Adodc1.RecordSource = "select * from Student where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox "Invalid Register Number / Data Not Found"
+ElseIf Adodc1.Recordset.RecordCount = 1 Then
+DataGrid1.Visible = True
+Adodc3.RecordSource = "select * from Taken where Regno = '" + Text1.Text + "'"
+Adodc3.Refresh
+Frame2.Visible = True
+Frame3.Visible = True
+Image1.Visible = True
+Label4 = Adodc1.Recordset("Regno")
+Label5 = Adodc1.Recordset("Studname")
+Label10 = Adodc1.Recordset("Course")
+Label7 = Adodc1.Recordset("DOB")
+pic = Adodc1.Recordset("Photo")
+Image1.Picture = LoadPicture(pic)
+End If
+End Sub
+
+Private Sub Form_Load()
+Command2.Visible = False
+Frame1.Visible = True
+Frame2.Visible = False
+Frame3.Visible = False
+DataGrid1.Visible = False
+End Sub
+
+Private Sub mnuclose_Click()
+End
+End Sub
+
+
+Private Sub mnuhn_Click()
+Form3.Show
+Unload Me
+End Sub
+
+
+
+
+Private Sub menuaddnew_Click()
+Form6.Show
+Unload Me
+End Sub
+
+Private Sub menulg_Click()
+Form2.Show
+Unload Me
+End Sub
+
+Private Sub menurep_Click()
+Form8.Show
+Unload Me
+End Sub
+
+Private Sub menuupdate_Click()
+Form7.Show
+Unload Me
+End Sub
+
+Private Sub mexit_Click()
+End
+End Sub
+
+Private Sub mnuaddnewuser_Click()
+Form10.Show
+End Sub
+
+Private Sub mnuissue_Click()
+Form2.Show
+Unload Me
+End Sub
+
+Private Sub mnumod_Click()
+Form5.Show
+Unload Me
+End Sub
+
+Private Sub mnunew_Click()
+Form4.Show
+Unload Me
+End Sub
+
+Private Sub mnuret_Click()
+Form11.Show
+Unload Me
+End Sub
+
+
+Private Sub Form_Load()
+Me.Left = (Screen.Width - Me.Width) / 2
+Me.Top = (Screen.Height - Me.Height) / 2
+End Sub
+
+Private Sub logincmd_Click()
+If txtUser = "" Or txtPass = "" Then
+MsgBox "Please Enter Details"
+txtUser.SetFocus
+Exit Sub
+End If
+User = txtUser.Text
+PASS = txtPass.Text
+Adodc1.RecordSource = "select * from Login where Username = '" + User + "' and Password = '" + PASS + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox " Login Failed"
+txtUser.Text = ""
+txtPass.Text = ""
+Else
+MsgBox "Login Successfull"
+Form3.Show
+Unload Me
+Exit Sub
+End If
+End Sub
+
+Private Sub mnuend_Click()
+End
+End Sub
+
+Private Sub Form_Load()
+Me.Left = (Screen.Width - Me.Width) / 2
+Me.Top = (Screen.Height - Me.Height) / 2
+End Sub
+
+Private Sub logincmd_Click()
+If txtUser = "" Or txtPass = "" Then
+MsgBox "Please Enter Details"
+txtUser.SetFocus
+Exit Sub
+End If
+User = txtUser.Text
+PASS = txtPass.Text
+Adodc1.RecordSource = "select * from Login where Username = '" + User + "' and Password = '" + PASS + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox " Login Failed"
+txtUser.Text = ""
+txtPass.Text = ""
+Else
+MsgBox "Login Successfull"
+Form3.Show
+Unload Me
+Exit Sub
+End If
+End Sub
+
+Private Sub mnuend_Click()
+End
+End Sub
+
+
+Private Sub cmdcheck_Click()
+Adodc2.RecordSource = "select * from Books where ISBN = '" + Text1.Text + "'"
+Adodc2.Refresh
+If Adodc2.Recordset.RecordCount = 0 Then
+MsgBox "Invalid ISBN "
+ElseIf Adodc2.Recordset.RecordCount = 1 Then
+Text2 = Adodc2.Recordset("Title")
+Text3 = Adodc2.Recordset("Author")
+Text4 = Adodc2.Recordset("Publisher")
+Combo1 = Adodc2.Recordset("Category")
+Combo2 = Adodc2.Recordset("Edition")
+Combo3 = Adodc2.Recordset("Languege")
+DTPicker1 = Adodc2.Recordset("Publicationdt")
+cmdsave.Visible = True
+End If
+End Sub
+
+Private Sub cmdsave_Click()
+If Text1.Text = "" Or Text2.Text = "" Or Text3.Text = "" Or Text4.Text = "" Or Combo1.Text = "" Or Combo2.Text = "" Or Combo3.Text = "" Then
+MsgBox "Enter Correct Details"
+Else
+Adodc2.RecordSource = "select * from Books where ISBN = '" + Text1.Text + "'"
+Adodc2.Refresh
+Adodc2.Recordset.Fields("ISBN").Value = Text1.Text
+Adodc2.Recordset.Fields("Title").Value = Text2.Text
+Adodc2.Recordset.Fields("Author").Value = Text3.Text
+Adodc2.Recordset.Fields("Publisher").Value = Text4.Text
+Adodc2.Recordset.Fields("Publicationdt").Value = DTPicker1.Value
+Adodc2.Recordset.Fields("Edition").Value = Combo2.Text
+Adodc2.Recordset.Fields("Languege").Value = Combo3.Text
+Adodc2.Recordset.Fields("Category").Value = Combo1.Text
+Adodc2.Recordset.Update
+MsgBox "Data Updated"
+Adodc2.RecordSource = "select * from Books"
+Adodc2.Refresh
+Text1.Text = ""
+Text2.Text = ""
+Text3.Text = ""
+Text4.Text = ""
+Combo2.Text = ""
+Combo1.Text = ""
+Combo3.Text = ""
+cmdsave.Visible = False
+End If
+End Sub
+
+Private Sub Form_Load()
+cmdsave.Visible = False
+Combo2.AddItem "Edition 1"
+Combo2.AddItem "Edition 2"
+Combo2.AddItem "Edition 3"
+Combo2.AddItem "Edition 4"
+Combo2.AddItem "Edition 5"
+Combo2.AddItem "Edition 6"
+Combo2.AddItem "Edition 7"
+Combo2.AddItem "Edition 8"
+Combo2.AddItem "Edition 9"
+Combo2.AddItem "Edition 10"
+Combo2.AddItem "Edition 11"
+Combo2.AddItem "Edition 12"
+Combo2.AddItem "Edition 13"
+Combo2.AddItem "Edition 14"
+Combo2.AddItem "Edition 15"
+Combo2.AddItem "Edition 16"
+Combo2.AddItem "Edition 17"
+Combo2.AddItem "Edition 18"
+Combo2.AddItem "Edition 19"
+Combo3.AddItem "Kannada"
+Combo3.AddItem "English"
+Combo3.AddItem "Hindi"
+Combo3.AddItem "Marati"
+Combo3.AddItem "Tamil"
+Combo3.AddItem "Telugu"
+Combo1.AddItem "Classic"
+Combo1.AddItem "Drama"
+Combo1.AddItem "Fable"
+Combo1.AddItem "Fairy Tales"
+Combo1.AddItem "Comics"
+End Sub
+
+Private Sub mnuhm_Click()
+Form3.Show
+Unload Me
+End Sub
+
+
+Dim pic As String
+
+Private Sub cmdsave_Click()
+If Text1.Text = "" Or Text2.Text = "" Or Text3.Text = "" Or Text4.Text = "" Or Combo1.Text = "" Or Combo2.Text = "" Or Combo3.Text = "" Then
+MsgBox "Enter Correct Details"
+Else
+With Adodc2.Recordset
+Adodc2.Recordset.AddNew
+Adodc2.Recordset.Fields("ISBN").Value = Text1.Text
+Adodc2.Recordset.Fields("Title").Value = Text2.Text
+Adodc2.Recordset.Fields("Author").Value = Text3.Text
+Adodc2.Recordset.Fields("Publisher").Value = Text4.Text
+Adodc2.Recordset.Fields("Publicationdt").Value = DTPicker1.Value
+Adodc2.Recordset.Fields("Edition").Value = Combo2.Text
+Adodc2.Recordset.Fields("Languege").Value = Combo3.Text
+Adodc2.Recordset.Fields("Category").Value = Combo1.Text
+Adodc2.Recordset.Update
+MsgBox "Data Updated"
+Text1.Text = ""
+Text2.Text = ""
+Text3.Text = ""
+Text4.Text = ""
+Combo2.Text = ""
+Combo1.Text = ""
+Combo3.Text = ""
+cmdsave.Visible = False
+Adodc2.RecordSource = "select * from Books"
+Adodc2.Refresh
+End With
+End If
+End Sub
+
+
+Private Sub Combo1_Click()
+cmdsave.Visible = True
+End Sub
+
+Private Sub Form_Load()
+cmdsave.Visible = False
+Combo2.AddItem "Edition 1"
+Combo2.AddItem "Edition 2"
+Combo2.AddItem "Edition 3"
+Combo2.AddItem "Edition 4"
+Combo2.AddItem "Edition 5"
+Combo2.AddItem "Edition 6"
+Combo2.AddItem "Edition 7"
+Combo2.AddItem "Edition 8"
+Combo2.AddItem "Edition 9"
+Combo2.AddItem "Edition 10"
+Combo2.AddItem "Edition 11"
+Combo2.AddItem "Edition 12"
+Combo2.AddItem "Edition 13"
+Combo2.AddItem "Edition 14"
+Combo2.AddItem "Edition 15"
+Combo2.AddItem "Edition 16"
+Combo2.AddItem "Edition 17"
+Combo2.AddItem "Edition 18"
+Combo2.AddItem "Edition 19"
+Combo3.AddItem "Kannada"
+Combo3.AddItem "English"
+Combo3.AddItem "Hindi"
+Combo3.AddItem "Marati"
+Combo3.AddItem "Tamil"
+Combo3.AddItem "Telugu"
+Combo1.AddItem "Classic"
+Combo1.AddItem "Drama"
+Combo1.AddItem "Fable"
+Combo1.AddItem "Fairy Tales"
+Combo1.AddItem "Comics"
+End Sub
+
+Private Sub mnuhm_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Dim pic As String
+
+Private Sub cmdsave_Click()
+Adodc1.Recordset.Fields("Regno").Value = Text1.Text
+Adodc1.Recordset.Fields("Studname").Value = Text2.Text
+Adodc1.Recordset.Fields("Course").Value = Combo1.Text
+Adodc1.Recordset.Fields("DOB").Value = DTPicker1.Value
+Adodc1.Recordset.Fields("Photo").Value = pic
+Adodc1.Recordset.Update
+MsgBox "Data Updated"
+Text1.Text = ""
+Text2.Text = ""
+Combo1.Text = ""
+cmdsave.Visible = False
+uploadbtn.Visible = False
+Image1.Visible = False
+End Sub
+
+
+
+Private Sub Command1_Click()
+Adodc1.RecordSource = "select * from Student where Regno = '" + Text1.Text + "'"
+Adodc1.Refresh
+If Adodc1.Recordset.RecordCount = 0 Then
+MsgBox "Invalid Register Number / Data Not Found"
+ElseIf Adodc1.Recordset.RecordCount = 1 Then
+Text2 = Adodc1.Recordset("Studname")
+Combo1 = Adodc1.Recordset("Course")
+DTPicker1 = Adodc1.Recordset("DOB")
+pic = Adodc1.Recordset("Photo")
+Image1.Picture = LoadPicture(pic)
+ cmdsave.Visible = True
+uploadbtn.Visible = True
+Image1.Visible = True
+End If
+End Sub
+
+Private Sub Form_Load()
+Image1.Visible = False
+ cmdsave.Visible = False
+uploadbtn.Visible = False
+Combo1.AddItem "BA-HEP"
+Combo1.AddItem "BSC-PMCs"
+Combo1.AddItem "BCOM"
+Combo1.AddItem "BBA"
+Combo1.AddItem "BCA"
+Combo1.AddItem "BSC-CBZ"
+Combo1.AddItem "BSC-PCM"
+Combo1.AddItem "BA-HES"
+Combo1.AddItem "BA-HEJ"
+Combo1.AddItem "BA-HEK"
+End Sub
+
+Private Sub mnuhm_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Private Sub uploadbtn_Click()
+Image1.Visible = True
+Cd1.ShowOpen
+Cd1.Filter = "Jpeg|*.jpg"
+pic = Cd1.FileName
+Image1.Picture = LoadPicture(pic)
+End Sub
+
+Dim pic As String
+
+Private Sub cmdsave_Click()
+If Text1.Text = "" Or Text2.Text = "" Or Combo1.Text = "" Then
+ MsgBox "Enter Correct Details"
+ Else
+Adodc1.Recordset.AddNew
+Adodc1.Recordset.Fields("Regno").Value = Text1.Text
+Adodc1.Recordset.Fields("Studname").Value = Text2.Text
+Adodc1.Recordset.Fields("Course").Value = Combo1.Text
+Adodc1.Recordset.Fields("DOB").Value = DTPicker1.Value
+Adodc1.Recordset.Fields("Photo").Value = pic
+Adodc1.Recordset.Update
+ MsgBox "Updated"
+ Image1.Visible = False
+ cmdsave.Visible = False
+uploadbtn.Visible = False
+Text1.Text = ""
+Text2.Text = ""
+Combo1.Text = ""
+ End If
+End Sub
+
+
+
+
+
+Private Sub Combo1_Click()
+uploadbtn.Visible = True
+End Sub
+
+Private Sub Form_Load()
+cmdsave.Visible = False
+uploadbtn.Visible = False
+Combo1.AddItem "BA-HEP"
+Combo1.AddItem "BSC-PMCs"
+Combo1.AddItem "BCOM"
+Combo1.AddItem "BBA"
+Combo1.AddItem "BCA"
+Combo1.AddItem "BSC-CBZ"
+Combo1.AddItem "BSC-PCM"
+Combo1.AddItem "BA-HES"
+Combo1.AddItem "BA-HEJ"
+Combo1.AddItem "BA-HEK"
+End Sub
+
+Private Sub mnuhome_Click()
+Form3.Show
+Unload Me
+End Sub
+
+Private Sub uploadbtn_Click()
+Image1.Visible = True
+Cd1.ShowOpen
+Cd1.Filter = "Jpeg|*.jpg"
+pic = Cd1.FileName
+Image1.Picture = LoadPicture(pic)
+cmdsave.Visible = True
+End Sub
